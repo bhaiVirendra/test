@@ -21,6 +21,8 @@
             --tag-bg: rgba(255, 255, 255, 0.2); --warning-color: #fbbf24; --error-color: #f87171;
             --success-color: #34d399; --star-active: #FFD700; --star-inactive: rgba(255,255,255,0.3);
             --modal-bg: #2d3748;
+            /* Stronger Border Colors for Inputs */
+            --strong-border: rgba(255, 255, 255, 0.5); 
         }
         [data-theme="light"] {
             --bg-gradient-1: #e0c3fc; --bg-gradient-2: #8ec5fc; --bg-gradient-3: #e2ebf0; --bg-gradient-4: #cfd9df;
@@ -30,6 +32,7 @@
             --shadow-color: rgba(0, 0, 0, 0.05); --accent-glow: rgba(142, 197, 252, 0.6);
             --tag-bg: rgba(0, 0, 0, 0.05); --star-inactive: #cbd5e0;
             --modal-bg: #ffffff;
+            --strong-border: #94a3b8; /* Dark Grey for Light Mode */
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -88,9 +91,13 @@
         .t-val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
         .email-link { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
         .social-link { background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; font-weight: 800; }
+        
         .btn-rate { width: 100%; padding: 1rem; margin-top: 0.5rem; border: none; border-radius: 14px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .btn-read { width: 100%; padding: 0.8rem; margin-top: 0.5rem; border: 1px solid var(--glass-border); border-radius: 14px; background: var(--input-bg); color: var(--text-primary); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        
         [data-theme="light"] .btn-rate { color: #444; }
         .btn-rate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6); }
+        .btn-read:hover { background: var(--glass-bg); transform: translateY(-2px); }
 
         /* Modals */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
@@ -117,13 +124,15 @@
         .profile-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; font-size: 1rem; width: 100%; }
         .profile-row.contact-row { justify-content: center; margin-top: 0.5rem; padding: 1.2rem; background: rgba(255, 255, 255, 0.05); border: 1px dashed var(--glass-border); }
 
-        /* IMPROVED RATING ROWS (Highlighed Edges) */
+        /* IMPROVED RATING ROWS (Highlighed Edges & Dark Borders) */
         .rating-group { 
             margin-bottom: 1rem; 
             padding: 1rem;
             border-radius: 12px;
-            background: rgba(0,0,0,0.02); /* Slight background */
-            border-left: 5px solid transparent; /* Hidden edge by default */
+            background: rgba(0,0,0,0.02);
+            /* Darker Border */
+            border: 1px solid var(--strong-border);
+            border-left: 5px solid transparent; 
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
@@ -132,7 +141,7 @@
         .rating-group:hover {
             background: rgba(0,0,0,0.05);
             border-left: 5px solid var(--accent-glow); /* Highlighted Edge */
-            transform: translateX(5px); /* Slide effect */
+            transform: translateX(5px); 
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         [data-theme="light"] .rating-group:hover {
@@ -149,12 +158,12 @@
             font-size: 1.8rem; 
             color: var(--star-inactive); 
             cursor: pointer; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy smooth transition */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             padding: 0 2px;
         }
         .star-btn:hover { 
             transform: scale(1.3) translateY(-2px); 
-            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6)); /* Glow effect */
+            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6)); 
         }
         .star-btn.active { 
             color: var(--star-active); 
@@ -165,7 +174,21 @@
         
         /* TEXT REVIEW AREA */
         .comment-section { margin-top: 1rem; margin-bottom: 1.5rem; }
-        .comment-input { width: 100%; min-height: 80px; padding: 1rem; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.95rem; resize: vertical; outline: none; transition: border 0.3s; }
+        .comment-input { 
+            width: 100%; 
+            min-height: 80px; 
+            padding: 1rem; 
+            background: var(--input-bg); 
+            /* Darker Border */
+            border: 1px solid var(--strong-border); 
+            border-radius: 12px; 
+            color: var(--text-primary); 
+            font-family: 'Inter', sans-serif; 
+            font-size: 0.95rem; 
+            resize: vertical; 
+            outline: none; 
+            transition: border 0.3s; 
+        }
         .comment-input:focus { border-color: var(--accent-glow); background: rgba(255,255,255,0.15); }
 
         @media (max-width: 768px) { .results-grid { grid-template-columns: 1fr; } .search-header h1 { font-size: 2rem; } }
@@ -265,7 +288,7 @@
             <button class="close-btn" onclick="closeModal()">×</button>
             <h2 style="margin-bottom: 0.5rem; font-size:1rem; opacity:0.7; text-transform:uppercase; letter-spacing:1px;">Rate Faculty</h2>
             <p id="modalTeacherName">Teacher Name</p>
-            <p id="editModeIndicator" style="display:none; color: var(--warning-color); font-size:0.8rem; margin-bottom:1.5rem;"><i class="fa-solid fa-pen"></i> You are editing your previous review.</p>
+            <p id="editModeIndicator" style="display:none; color: #ea580c; font-size:0.8rem; margin-bottom:1.5rem; font-weight:700;"><i class="fa-solid fa-pen"></i> You are editing your previous review.</p>
             <input type="hidden" id="currentTeacherId">
             <div id="ratingForm"></div>
             <button class="submit-btn" id="modalSubmitBtn" onclick="submitUserReview()">Submit Rating</button>
@@ -517,6 +540,12 @@
                 const starDisplay = stats.count > 0 ? `<span style="color:${starColor}">★</span>` : "☆";
                 const imageSrc = t.image ? t.image : `https://api.dicebear.com/9.x/avataaars/svg?seed=${t.seed || t.id}`;
                 
+                // MOBILE NUMBER LOGIC
+                let phoneHtml = '';
+                if(t.phone && t.phone.trim().length > 0) {
+                    phoneHtml = `<div class="t-row"><span class="t-label">📞 Phone</span><span class="t-val">${t.phone}</span></div>`;
+                }
+
                 return `
                 <div class="teacher-card glass fade-in">
                     <div class="card-banner"></div>
@@ -531,8 +560,11 @@
                         <div class="t-details-list">
                             <div class="t-row"><span class="t-label">🏫 Dept</span><span class="t-val">${t.department}</span></div>
                             <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val" style="font-size: 0.85rem;"><a href="mailto:${t.email}" class="email-link">${t.email}</a></span></div>
+                            ${phoneHtml} 
                             <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">Connect</a></span></div>
+                            
                             <button class="btn-rate" onclick="openReviewModal(${t.id}, '${t.name}')"><span>⭐</span> Rate Now</button>
+                            <button class="btn-read" onclick="alert('Review reading feature coming soon!')">📖 Read Reviews</button>
                         </div>
                     </div>
                 </div>`}).join('');
