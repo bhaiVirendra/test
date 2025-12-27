@@ -21,7 +21,6 @@
             --tag-bg: rgba(255, 255, 255, 0.2); --warning-color: #fbbf24; --error-color: #f87171;
             --success-color: #34d399; --star-active: #FFD700; --star-inactive: rgba(255,255,255,0.3);
             --modal-bg: #2d3748;
-            /* Stronger Border for rows */
             --strong-border: rgba(255, 255, 255, 0.6); 
         }
         [data-theme="light"] {
@@ -32,7 +31,7 @@
             --shadow-color: rgba(0, 0, 0, 0.05); --accent-glow: rgba(142, 197, 252, 0.6);
             --tag-bg: rgba(0, 0, 0, 0.05); --star-inactive: #cbd5e0;
             --modal-bg: #ffffff;
-            --strong-border: #a0aec0; /* Darker Grey for Light Mode borders */
+            --strong-border: #a0aec0; 
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -86,47 +85,61 @@
         .card-rating-display span.score { font-size: 1.1rem; color: var(--text-primary); }
         .t-details-list { display: flex; flex-direction: column; gap: 0.8rem; }
         
-        /* UPDATED: UNIFORM ROW SIZE & DARK BORDER */
+        /* UNIFORM ROW SIZE & DARK BORDER */
         .t-row { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             padding: 0 1rem; 
-            min-height: 55px; /* Ensures uniform height */
+            min-height: 55px; 
             background: var(--input-bg); 
-            border: 1px solid var(--strong-border); /* Visible Dark Border */
+            border: 1px solid var(--strong-border); 
             border-radius: 14px; 
             font-size: 0.95rem; 
             transition: transform 0.2s, background 0.2s; 
         }
-        .t-row:hover { 
-            transform: scale(1.02); 
-            background: rgba(255,255,255,0.15); 
-        }
-        
+        .t-row:hover { transform: scale(1.02); background: rgba(255,255,255,0.15); }
         .t-label { color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.6rem; }
         .t-val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
         
-        /* Unified Link Style for Email and Social */
         .social-link { 
             background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); 
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; 
-            text-decoration: none; 
+            text-decoration: none; font-weight: 800; border-bottom: 1px dotted transparent; transition: border-bottom 0.3s;
+        }
+        .social-link:hover { border-bottom: 1px dotted #0e76a8; }
+        
+        /* ACTION BUTTONS (Rate & Read) - Same Style */
+        .btn-action { 
+            width: 100%; 
+            padding: 1rem; /* Same thickness */
+            margin-top: 0.5rem; 
+            border: none; 
+            border-radius: 14px; 
+            /* Same Gradient */
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); 
+            color: #fff; 
             font-weight: 800; 
-            border-bottom: 1px dotted transparent;
-            transition: border-bottom 0.3s;
+            font-size: 1rem; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); 
+            transition: all 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 0.5rem; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1); 
         }
-        .social-link:hover {
-            border-bottom: 1px dotted #0e76a8;
+        [data-theme="light"] .btn-action { color: #444; }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6); }
+
+        /* Icon inside buttons with Dark Border (Text Stroke/Shadow) */
+        .btn-icon-border {
+            /* Simulates a dark border around the emoji */
+            text-shadow: 1px 1px 0 #333, -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333;
+            font-size: 1.2rem;
         }
-        
-        .btn-rate { width: 100%; padding: 1rem; margin-top: 0.5rem; border: none; border-radius: 14px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .btn-read { width: 100%; padding: 0.8rem; margin-top: 0.5rem; border: 1px solid var(--glass-border); border-radius: 14px; background: var(--input-bg); color: var(--text-primary); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-        
-        [data-theme="light"] .btn-rate { color: #444; }
-        .btn-rate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6); }
-        .btn-read:hover { background: var(--glass-bg); transform: translateY(-2px); }
 
         /* Modals */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
@@ -144,79 +157,50 @@
             letter-spacing: -0.5px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
-        [data-theme="light"] #modalTeacherName {
-            color: #1a202c; /* Very Dark Grey/Black for Light Mode */
-        }
+        [data-theme="light"] #modalTeacherName { color: #1a202c; }
 
         /* Student Profile Styling */
         .profile-details { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
         .profile-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; font-size: 1rem; width: 100%; }
         .profile-row.contact-row { justify-content: center; margin-top: 0.5rem; padding: 1.2rem; background: rgba(255, 255, 255, 0.05); border: 1px dashed var(--glass-border); }
 
-        /* IMPROVED RATING ROWS (Highlighed Edges & Dark Borders) */
+        /* RATING ROWS */
         .rating-group { 
             margin-bottom: 1rem; 
             padding: 1rem;
             border-radius: 12px;
             background: rgba(0,0,0,0.02);
-            /* Darker Border */
             border: 1px solid var(--strong-border);
             border-left: 5px solid transparent; 
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            display: flex; flex-direction: column; gap: 0.5rem;
         }
         .rating-group:hover {
             background: rgba(0,0,0,0.05);
-            border-left: 5px solid var(--accent-glow); /* Highlighted Edge */
+            border-left: 5px solid var(--accent-glow);
             transform: translateX(5px); 
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        [data-theme="light"] .rating-group:hover {
-            background: #f7fafc;
-        }
+        [data-theme="light"] .rating-group:hover { background: #f7fafc; }
 
         .rating-label { display: block; font-weight: 600; font-size: 0.95rem; opacity: 0.9; }
         .stars-container { display: flex; gap: 8px; }
         
-        /* SMOOTHER STARS */
         .star-btn { 
-            background: none; 
-            border: none; 
-            font-size: 1.8rem; 
-            color: var(--star-inactive); 
-            cursor: pointer; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            padding: 0 2px;
+            background: none; border: none; font-size: 1.8rem; color: var(--star-inactive); cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 0 2px;
         }
-        .star-btn:hover { 
-            transform: scale(1.3) translateY(-2px); 
-            filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6)); 
-        }
-        .star-btn.active { 
-            color: var(--star-active); 
-            filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3));
-        }
+        .star-btn:hover { transform: scale(1.3) translateY(-2px); filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6)); }
+        .star-btn.active { color: var(--star-active); filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3)); }
 
         .submit-btn { width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); }
         
         /* TEXT REVIEW AREA */
         .comment-section { margin-top: 1rem; margin-bottom: 1.5rem; }
         .comment-input { 
-            width: 100%; 
-            min-height: 80px; 
-            padding: 1rem; 
-            background: var(--input-bg); 
-            /* Darker Border */
-            border: 1px solid var(--strong-border); 
-            border-radius: 12px; 
-            color: var(--text-primary); 
-            font-family: 'Inter', sans-serif; 
-            font-size: 0.95rem; 
-            resize: vertical; 
-            outline: none; 
-            transition: border 0.3s; 
+            width: 100%; min-height: 80px; padding: 1rem; background: var(--input-bg); 
+            border: 1px solid var(--strong-border); border-radius: 12px; color: var(--text-primary); 
+            font-family: 'Inter', sans-serif; font-size: 0.95rem; resize: vertical; outline: none; transition: border 0.3s; 
         }
         .comment-input:focus { border-color: var(--accent-glow); background: rgba(255,255,255,0.15); }
 
@@ -572,7 +556,7 @@
                 // MOBILE NUMBER LOGIC
                 let phoneHtml = '';
                 if(t.phone && t.phone.trim().length > 0) {
-                    phoneHtml = `<div class="t-row"><span class="t-label">📞 Phone</span><span class="t-val">${t.phone}</span></div>`;
+                    phoneHtml = `<div class="t-row"><span class="t-label">📞 Phone</span><span class="t-val"><a href="tel:${t.phone}" class="social-link">Call</a></span></div>`;
                 }
 
                 return `
@@ -588,12 +572,12 @@
                         </div>
                         <div class="t-details-list">
                             <div class="t-row"><span class="t-label">🏫 Dept</span><span class="t-val">${t.department}</span></div>
-                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val"><a href="mailto:${t.email}" class="social-link">Send Mail</a></span></div>
+                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val"><a href="mailto:${t.email}" class="social-link">Connect</a></span></div>
                             ${phoneHtml} 
-                            <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">View Profile</a></span></div>
+                            <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">Connect</a></span></div>
                             
-                            <button class="btn-rate" onclick="openReviewModal(${t.id}, '${t.name}')"><span>⭐</span> Rate Now</button>
-                            <button class="btn-read" onclick="alert('Review reading feature coming soon!')">📖 Read Reviews</button>
+                            <button class="btn-action" onclick="openReviewModal(${t.id}, '${t.name}')"><span class="btn-icon-border">⭐</span> Rate Now</button>
+                            <button class="btn-action" onclick="alert('Review reading feature coming soon!')"><span class="btn-icon-border">📖</span> Read Reviews</button>
                         </div>
                     </div>
                 </div>`}).join('');
