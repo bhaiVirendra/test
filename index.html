@@ -21,8 +21,8 @@
             --tag-bg: rgba(255, 255, 255, 0.2); --warning-color: #fbbf24; --error-color: #f87171;
             --success-color: #34d399; --star-active: #FFD700; --star-inactive: rgba(255,255,255,0.3);
             --modal-bg: #2d3748;
-            /* Stronger Border Colors for Inputs */
-            --strong-border: rgba(255, 255, 255, 0.5); 
+            /* Stronger Border for rows */
+            --strong-border: rgba(255, 255, 255, 0.6); 
         }
         [data-theme="light"] {
             --bg-gradient-1: #e0c3fc; --bg-gradient-2: #8ec5fc; --bg-gradient-3: #e2ebf0; --bg-gradient-4: #cfd9df;
@@ -32,7 +32,7 @@
             --shadow-color: rgba(0, 0, 0, 0.05); --accent-glow: rgba(142, 197, 252, 0.6);
             --tag-bg: rgba(0, 0, 0, 0.05); --star-inactive: #cbd5e0;
             --modal-bg: #ffffff;
-            --strong-border: #94a3b8; /* Dark Grey for Light Mode */
+            --strong-border: #a0aec0; /* Darker Grey for Light Mode borders */
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -85,12 +85,41 @@
         .card-rating-display { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--star-active); font-weight: 700; }
         .card-rating-display span.score { font-size: 1.1rem; color: var(--text-primary); }
         .t-details-list { display: flex; flex-direction: column; gap: 0.8rem; }
-        .t-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--input-bg); border-radius: 14px; font-size: 0.95rem; transition: transform 0.2s; border: 1px solid transparent; }
-        .t-row:hover { transform: scale(1.02); background: rgba(255,255,255,0.15); border-color: var(--glass-border); }
+        
+        /* UPDATED: UNIFORM ROW SIZE & DARK BORDER */
+        .t-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 1rem; 
+            min-height: 55px; /* Ensures uniform height */
+            background: var(--input-bg); 
+            border: 1px solid var(--strong-border); /* Visible Dark Border */
+            border-radius: 14px; 
+            font-size: 0.95rem; 
+            transition: transform 0.2s, background 0.2s; 
+        }
+        .t-row:hover { 
+            transform: scale(1.02); 
+            background: rgba(255,255,255,0.15); 
+        }
+        
         .t-label { color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.6rem; }
         .t-val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
-        .email-link { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
-        .social-link { background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; font-weight: 800; }
+        
+        /* Unified Link Style for Email and Social */
+        .social-link { 
+            background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            text-decoration: none; 
+            font-weight: 800; 
+            border-bottom: 1px dotted transparent;
+            transition: border-bottom 0.3s;
+        }
+        .social-link:hover {
+            border-bottom: 1px dotted #0e76a8;
+        }
         
         .btn-rate { width: 100%; padding: 1rem; margin-top: 0.5rem; border: none; border-radius: 14px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .btn-read { width: 100%; padding: 0.8rem; margin-top: 0.5rem; border: 1px solid var(--glass-border); border-radius: 14px; background: var(--input-bg); color: var(--text-primary); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
@@ -559,9 +588,9 @@
                         </div>
                         <div class="t-details-list">
                             <div class="t-row"><span class="t-label">🏫 Dept</span><span class="t-val">${t.department}</span></div>
-                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val" style="font-size: 0.85rem;"><a href="mailto:${t.email}" class="email-link">${t.email}</a></span></div>
+                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val"><a href="mailto:${t.email}" class="social-link">Send Mail</a></span></div>
                             ${phoneHtml} 
-                            <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">Connect</a></span></div>
+                            <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">View Profile</a></span></div>
                             
                             <button class="btn-rate" onclick="openReviewModal(${t.id}, '${t.name}')"><span>⭐</span> Rate Now</button>
                             <button class="btn-read" onclick="alert('Review reading feature coming soon!')">📖 Read Reviews</button>
