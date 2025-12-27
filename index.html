@@ -135,7 +135,7 @@
         .star-btn.active { color: var(--star-active); }
         .submit-btn { width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); }
         
-        /* NEW: TEXT REVIEW AREA */
+        /* TEXT REVIEW AREA */
         .comment-section { margin-top: 1rem; margin-bottom: 1.5rem; }
         .comment-input {
             width: 100%;
@@ -533,14 +533,12 @@
         }
 
         /* --- RATING LOGIC --- */
-        let currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+        // Updated criteria: Only 3 items now
+        let currentRatings = { c1:0, c2:0, c3:0 };
         const criteriaNames = [
             {id: 'c1', label: '1. Behaviour'},
-            {id: 'c2', label: '2. Teaching Style'},
-            {id: 'c3', label: '3. Marks in Exam'},
-            {id: 'c4', label: '4. Marks in Internal'},
-            {id: 'c5', label: '5. Attendance'},
-            {id: 'c6', label: '6. Notes + Assignment'}
+            {id: 'c2', label: '2. Marks in Exam'},
+            {id: 'c3', label: '3. Marks in Internal'}
         ];
 
         function openReviewModal(id, name) {
@@ -555,13 +553,16 @@
             let existingComment = "";
 
             if (existingReview) {
-                currentRatings = { ...existingReview.ratings };
-                existingComment = existingReview.comment || ""; // Load existing comment
+                // IMPORTANT: If old reviews had different keys, this might need handling.
+                // Assuming new reviews will use c1,c2,c3. 
+                // Using spread to avoid issues if keys don't match exactly, but ideally database should match.
+                currentRatings = { c1:0, c2:0, c3:0, ...existingReview.ratings };
+                existingComment = existingReview.comment || ""; 
                 submitBtn.innerText = "Update Review"; 
                 submitBtn.style.background = "var(--bg-gradient-2)";
                 editIndicator.style.display = "block";
             } else {
-                currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+                currentRatings = { c1:0, c2:0, c3:0 };
                 submitBtn.innerText = "Submit Review";
                 submitBtn.style.background = "var(--success-color)";
                 editIndicator.style.display = "none";
@@ -583,7 +584,7 @@
                 formContainer.appendChild(group);
             });
 
-            // 2. Generate Text Area (NEW)
+            // 2. Generate Text Area
             const commentDiv = document.createElement('div');
             commentDiv.className = 'comment-section';
             commentDiv.innerHTML = `
@@ -607,14 +608,24 @@
         }
 
         function submitUserReview() {
-            if(Object.values(currentRatings).includes(0)) { alert("Please rate all 6 criteria!"); return; }
+            // Check only the 3 distinct criteria for non-zero values
+            if(currentRatings.c1 === 0 || currentRatings.c2 === 0 || currentRatings.c3 === 0) { 
+                alert("Please rate all 3 criteria!"); 
+                return; 
+            }
             
             const teacherId = document.getElementById('currentTeacherId').value;
-            // Get the comment
             const commentText = document.getElementById('reviewComment').value.trim();
 
-            let sum = 0; Object.values(currentRatings).forEach(v => sum += v);
-            const avgScore = (sum / 6).toFixed(1);
+            // Calculate Sum
+            let sum = 0;
+            // Only sum the valid keys in case old data lingers
+            sum += (currentRatings.c1 || 0);
+            sum += (currentRatings.c2 || 0);
+            sum += (currentRatings.c3 || 0);
+
+            // Average is now divided by 3
+            const avgScore = (sum / 3).toFixed(1);
             
             const btn = document.querySelector('#reviewModal .submit-btn');
             const originalText = btn.innerText;
@@ -626,8 +637,8 @@
                 action: 'submit_review', 
                 teacherId: teacherId, 
                 user: loggedInUser, 
-                ratings: currentRatings, 
-                comment: commentText, // Send comment to backend
+                ratings: { c1: currentRatings.c1, c2: currentRatings.c2, c3: currentRatings.c3 }, 
+                comment: commentText, 
                 avgScore: avgScore 
             };
 
