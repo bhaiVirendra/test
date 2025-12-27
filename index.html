@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIIT Faculty Review Portal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* GLASSMORPHISM THEME */
+        :root {
+            --bg-gradient-1: #89f7fe; --bg-gradient-2: #66a6ff; --bg-gradient-3: #fbc2eb; --bg-gradient-4: #a6c1ee;
+            --glass-bg: rgba(255, 255, 255, 0.15); --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.85);
+            --input-bg: rgba(255, 255, 255, 0.1); --input-border: rgba(255, 255, 255, 0.25);
+            --shadow-color: rgba(0, 0, 0, 0.1); --accent-glow: rgba(102, 166, 255, 0.5);
+            --tag-bg: rgba(255, 255, 255, 0.2); --warning-color: #fbbf24; --error-color: #f87171;
+            --success-color: #34d399; --star-active: #FFD700; --star-inactive: rgba(255,255,255,0.3);
+        }
+        [data-theme="light"] {
+            --bg-gradient-1: #e0c3fc; --bg-gradient-2: #8ec5fc; --bg-gradient-3: #e2ebf0; --bg-gradient-4: #cfd9df;
+            --glass-bg: rgba(255, 255, 255, 0.65); --glass-border: rgba(255, 255, 255, 0.9);
+            --text-primary: #2d3748; --text-secondary: rgba(45, 55, 72, 0.7);
+            --input-bg: rgba(255, 255, 255, 0.7); --input-border: rgba(255, 255, 255, 1);
+            --shadow-color: rgba(0, 0, 0, 0.05); --accent-glow: rgba(142, 197, 252, 0.6);
+            --tag-bg: rgba(0, 0, 0, 0.05); --star-inactive: #cbd5e0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3), var(--bg-gradient-4));
+            background-size: 400% 400%; animation: gradientShift 15s ease infinite;
+            color: var(--text-primary); min-height: 100vh; overflow-x: hidden; transition: color 0.3s ease;
+            display: flex; flex-direction: column; 
+        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 8px 32px var(--shadow-color); border-radius: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; padding-bottom: 2rem; flex: 1; width: 100%; }
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Navigation */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; margin-bottom: 2rem; }
+        .nav-controls { display: flex; gap: 1rem; align-items: center; }
+        .icon-btn { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); transition: transform 0.2s, background 0.2s; }
+        .icon-btn:hover { transform: scale(1.1); background: var(--input-bg); }
+        
+        /* Login */
+        #login-section { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; background: linear-gradient(-45deg, var(--bg-gradient-1), var(--bg-gradient-2)); display: flex; justify-content: center; align-items: center; }
+        .login-box { width: 90%; max-width: 400px; padding: 2.5rem; text-align: center; }
+        .login-input { width: 100%; padding: 1rem; margin: 1rem 0; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; color: var(--text-primary); font-size: 1rem; outline: none; transition: border 0.3s; }
+        .login-input:focus { border-color: var(--accent-glow); background: rgba(255,255,255,0.2); }
+        .btn-primary { width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); margin-top: 0.5rem; transition: transform 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+
+        /* Search & Grid */
+        .search-header { text-align: center; margin-bottom: 3rem; }
+        .search-container { position: relative; max-width: 600px; margin: 0 auto 3rem auto; display: flex; gap: 1rem; align-items: stretch; }
+        .search-input-wrapper { position: relative; flex-grow: 1; }
+        .search-icon-input { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; opacity: 0.7; pointer-events: none; z-index: 1; }
+        .search-input { padding-left: 3.5rem; height: 60px; font-size: 1.2rem; border-radius: 50px; width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); backdrop-filter: blur(10px); transition: all 0.3s; }
+        .search-input:focus { outline: none; box-shadow: 0 0 0 4px var(--accent-glow); background: var(--input-bg); }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+        
+        /* Teacher Card */
+        .teacher-card { padding: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .card-banner { height: 110px; background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05)); position: relative; }
+        .t-avatar-wrapper { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); }
+        .t-avatar { width: 100px; height: 100px; border-radius: 50%; background: #ffffff; border: 4px solid rgba(255,255,255,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.2); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .t-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .t-content { padding: 4rem 1.5rem 1.5rem 1.5rem; text-align: center; }
+        .t-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .t-badge { color: var(--text-primary); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 1rem; background: var(--tag-bg); border-radius: 20px; border: 1px solid var(--glass-border); }
+        .card-rating-display { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--star-active); font-weight: 700; }
+        .card-rating-display span.score { font-size: 1.1rem; color: var(--text-primary); }
+        .t-details-list { display: flex; flex-direction: column; gap: 0.8rem; }
+        .t-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--input-bg); border-radius: 14px; font-size: 0.95rem; transition: transform 0.2s; border: 1px solid transparent; }
+        .t-row:hover { transform: scale(1.02); background: rgba(255,255,255,0.15); border-color: var(--glass-border); }
+        .t-label { color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.6rem; }
+        .t-val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
+        .email-link { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
+        .social-link { background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; font-weight: 800; }
+        .btn-rate { width: 100%; padding: 1rem; margin-top: 0.5rem; border: none; border-radius: 14px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        [data-theme="light"] .btn-rate { color: #444; }
+        .btn-rate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6); }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .review-modal { width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; background: var(--glass-bg); background-color: #2d3748; border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; position: relative; transform: scale(0.9); transition: transform 0.3s; color: var(--text-primary); }
+        [data-theme="light"] .review-modal { background-color: #fff; }
+        .modal-overlay.active .review-modal { transform: scale(1); }
+        .close-btn { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; background: none; border: none; color: var(--text-secondary); cursor: pointer; }
+        
+        /* Student Profile Styling */
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .profile-row.contact-row {
+            justify-content: center;
+            margin-top: 0.5rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--glass-border);
+        }
+
+        /* Rating Stars */
+        .rating-group { margin-bottom: 1.5rem; }
+        .rating-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.95rem; }
+        .stars-container { display: flex; gap: 5px; }
+        .star-btn { background: none; border: none; font-size: 1.8rem; color: var(--star-inactive); cursor: pointer; transition: transform 0.2s; }
+        .star-btn:hover { transform: scale(1.2); }
+        .star-btn.active { color: var(--star-active); }
+        .submit-btn { width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); }
+        
+        /* NEW: TEXT REVIEW AREA */
+        .comment-section { margin-top: 1rem; margin-bottom: 1.5rem; }
+        .comment-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 1rem;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            transition: border 0.3s;
+        }
+        .comment-input:focus {
+            border-color: var(--accent-glow);
+            background: rgba(255,255,255,0.15);
+        }
+
+        @media (max-width: 768px) { .results-grid { grid-template-columns: 1fr; } .search-header h1 { font-size: 2rem; } }
+        
+        .footer-credit { width: 100%; text-align: center; padding: 2rem 0; margin-top: auto; color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; opacity: 0.7; }
+        .insta-contact-link { color: #E1306C; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: transform 0.2s; }
+        .insta-contact-link:hover { transform: scale(1.05); }
+
+        /* Hide Number Input Spinners */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div id="login-section">
+        <div class="login-box glass fade-in">
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Student Login</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Verification Required</p>
+            
+            <div id="step-1-roll">
+                <input type="number" id="kiitRoll" class="login-input" placeholder="Enter Roll Number (e.g. 2105123)">
+                <button onclick="sendOtp()" class="btn-primary" id="btn-send-otp">Send OTP</button>
+            </div>
+
+            <div id="step-2-otp" class="hidden">
+                <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:0.5rem;">
+                    OTP sent to <span id="display-email" style="font-weight:bold;"></span>
+                </p>
+                <input type="number" id="otpInput" class="login-input" placeholder="Enter 6-digit OTP">
+                <button onclick="verifyOtp()" class="btn-primary" id="btn-verify-otp">Verify & Login</button>
+                <button onclick="resetLogin()" style="background:none; border:none; color:var(--text-secondary); text-decoration:underline; margin-top:10px; cursor:pointer;">Change Roll Number</button>
+            </div>
+
+            <p id="loginStatus" style="color: var(--warning-color); margin-top: 1rem; font-size: 0.9rem; min-height: 20px;"></p>
+        </div>
+    </div>
+
+    <div id="dashboard-section" class="container hidden">
+        <div class="navbar">
+            <div class="nav-brand"></div>
+            <div class="nav-controls">
+                <div class="icon-btn" onclick="toggleProfile()" title="My Profile"><i class="fa-solid fa-user"></i></div>
+                <div class="icon-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="themeIcon">☀️</span></div>
+            </div>
+        </div>
+
+        <div class="search-header fade-in">
+            <h1 style="font-size: 3.5rem; font-weight: 800; margin-bottom: 0.5rem; text-shadow: 0 4px 30px rgba(0,0,0,0.1);">Faculty Directory</h1>
+            <p style="color: var(--text-secondary); font-size: 1.2rem;">Connect with & Rate professors</p>
+        </div>
+        
+        <div class="search-container fade-in">
+            <div class="search-input-wrapper">
+                <span class="search-icon-input">🔍</span>
+                <input type="text" id="teacherSearchInput" class="search-input" placeholder="Enter Teacher Name..." oninput="searchTeacher()">
+            </div>
+        </div>
+
+        <div id="searchResults" class="results-grid fade-in">
+            <div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-size: 3rem;">🎓</div>
+                <p>Start typing a Name to find faculty members.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-credit">Made by Bhai Virendra</div>
+
+    <div class="modal-overlay" id="profileModal">
+        <div class="review-modal">
+            <button class="close-btn" onclick="closeProfile()">×</button>
+            <h2 style="margin-bottom: 1rem;">Student Profile</h2>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 80px; height: 80px; background: var(--success-color); border-radius: 50%; display:inline-flex; align-items:center; justify-content:center; font-size: 2rem; color: white; box-shadow: 0 4px 20px rgba(52, 211, 153, 0.5);">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+            </div>
+            
+            <div class="profile-details">
+                <div class="profile-row"><span style="opacity:0.7">Name</span><span id="p-name" style="font-weight:600"></span></div>
+                <div class="profile-row"><span style="opacity:0.7">Email</span><span id="p-email" style="font-weight:600"></span></div>
+                <div class="profile-row"><span style="opacity:0.7">Status</span><span id="p-status" style="font-weight:600">Checking...</span></div>
+                
+                <div class="profile-row contact-row">
+                    <a href="https://www.instagram.com/kiit531?igsh=MXVrNDV6d3A4dHJ4" target="_blank" class="insta-contact-link">
+                        <i class="fa-brands fa-instagram" style="font-size: 1.4rem;"></i> Contact us on Insta
+                    </a>
+                </div>
+            </div>
+            <button class="submit-btn" style="background: var(--error-color);" onclick="logoutStudent()">Logout</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="reviewModal">
+        <div class="review-modal">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <h2 style="margin-bottom: 0.2rem;">Rate Faculty</h2>
+            <p id="modalTeacherName" style="color: var(--accent-glow); margin-bottom: 1rem; font-weight: 600;">Teacher Name</p>
+            <p id="editModeIndicator" style="display:none; color: var(--warning-color); font-size:0.8rem; margin-bottom:1.5rem;"><i class="fa-solid fa-pen"></i> You are editing your previous review.</p>
+            <input type="hidden" id="currentTeacherId">
+            <div id="ratingForm"></div>
+            <button class="submit-btn" id="modalSubmitBtn" onclick="submitUserReview()">Submit Rating</button>
+        </div>
+    </div>
+
+        <script>
+        /* =========================================
+           1. AUTHENTICATION & GOOGLE SHEET CONNECTION
+           ========================================= */
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsPVXkzWu4PV0LRpap9D_6y9_mGVa2HQmPcpg2GLxCDpEHC0fJEK_PG9eDbvbh6F1eCjGkcgI1ljQ5/pub?output=csv";
+        const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbxPtgbG_fWAyJ4abuxPjgtQqLxab44U8AMafG3K4LPGmYy7hnh1VntREJtVqzcGQEQ/exec";
+        const STORAGE_KEY = 'kiit_user_session'; 
+
+        let loggedInUser = "";
+        let pendingRoll = ""; // Store roll while waiting for OTP
+
+        // --- CHECK SESSION ON LOAD ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const storedSession = localStorage.getItem(STORAGE_KEY);
+            if (storedSession) {
+                try {
+                    const userData = JSON.parse(storedSession);
+                    loggedInUser = userData.roll;
+                    updateDashboardUI(userData.name, userData.email);
+                } catch (e) {
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            }
+            loadAllReviews(); // Load reviews in background
+        });
+
+        // --- STEP 1: SEND OTP ---
+        function sendOtp() {
+            const rollInput = document.getElementById('kiitRoll');
+            const status = document.getElementById('loginStatus');
+            const btn = document.getElementById('btn-send-otp');
+            
+            const roll = rollInput.value.trim();
+            if (roll.length < 5) {
+                status.innerText = "Invalid Roll Number";
+                status.style.color = "var(--error-color)";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+            status.innerText = "";
+
+            fetch(REVIEW_API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: 'send_otp', roll: roll })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    pendingRoll = roll;
+                    document.getElementById('step-1-roll').classList.add('hidden');
+                    document.getElementById('step-2-otp').classList.remove('hidden');
+                    document.getElementById('display-email').innerText = roll + "@kiit.ac.in";
+                    status.innerText = "OTP sent to your KIIT email.";
+                    status.style.color = "var(--success-color)";
+                } else {
+                    throw new Error(data.error || "Failed to send");
+                }
+            })
+            .catch(err => {
+                status.innerText = "Error sending OTP. Try again.";
+                status.style.color = "var(--error-color)";
+                btn.disabled = false;
+                btn.innerText = "Send OTP";
+            });
+        }
+
+        // --- STEP 2: VERIFY OTP ---
+        function verifyOtp() {
+            const otpInput = document.getElementById('otpInput');
+            const status = document.getElementById('loginStatus');
+            const btn = document.getElementById('btn-verify-otp');
+            
+            const otp = otpInput.value.trim();
+            if (otp.length < 6) {
+                status.innerText = "Enter 6-digit OTP";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Verifying...";
+
+            fetch(REVIEW_API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: 'verify_otp', roll: pendingRoll, otp: otp })
+            })
+            .then(res => res.json())
+            .then(async data => {
+                if (data.result === 'success') {
+                    // FAST LOGIN: Use Roll as placeholder name immediately
+                    let name = "Student " + pendingRoll;
+                    const email = pendingRoll + "@kiit.ac.in";
+
+                    const sessionData = {
+                        roll: pendingRoll,
+                        name: name,
+                        email: email,
+                        isVerified: true
+                    };
+
+                    // Store and Update UI immediately
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+                    loggedInUser = pendingRoll;
+                    updateDashboardUI(name, email);
+
+                    // Fetch real name in background
+                    getStudentDataFromSheet(pendingRoll).then(studentData => {
+                        if (studentData && studentData.name) {
+                            sessionData.name = studentData.name;
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+                            // Update the displayed name if the element exists
+                            const nameEl = document.getElementById('p-name');
+                            if(nameEl) nameEl.innerText = studentData.name;
+                        }
+                    });
+
+                } else {
+                    status.innerText = data.error || "Invalid OTP";
+                    status.style.color = "var(--error-color)";
+                    btn.disabled = false;
+                    btn.innerText = "Verify & Login";
+                }
+            })
+            .catch(err => {
+                status.innerText = "Verification failed.";
+                btn.disabled = false;
+                btn.innerText = "Verify & Login";
+            });
+        }
+
+        function resetLogin() {
+            document.getElementById('step-1-roll').classList.remove('hidden');
+            document.getElementById('step-2-otp').classList.add('hidden');
+            document.getElementById('btn-send-otp').disabled = false;
+            document.getElementById('btn-send-otp').innerText = "Send OTP";
+            document.getElementById('otpInput').value = "";
+            document.getElementById('loginStatus').innerText = "";
+        }
+
+        function updateDashboardUI(name, email) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('p-name').innerText = name;
+            document.getElementById('p-email').innerText = email;
+            document.getElementById('p-status').innerText = "Verified ✅";
+            document.getElementById('p-status').style.color = "var(--success-color)";
+        }
+
+        function logoutStudent() {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+
+        async function getStudentDataFromSheet(inputRoll) {
+            try {
+                const response = await fetch(CSV_URL);
+                const text = await response.text();
+                const rows = text.split('\n').map(row => row.split(','));
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    if(row.length > 2) {
+                        const sheetRoll = row[0].replace(/"/g, '').trim();
+                        if (sheetRoll === inputRoll) {
+                            return {
+                                name: row[1].replace(/"/g, '').trim(),
+                                email: row[2].replace(/"/g, '').trim()
+                            };
+                        }
+                    }
+                }
+                return null; 
+            } catch (err) { return null; }
+        }
+
+        function toggleProfile() { document.getElementById('profileModal').classList.add('active'); }
+        function closeProfile() { document.getElementById('profileModal').classList.remove('active'); }
+        
+        let currentTheme = 'light';
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', currentTheme === 'dark' ? '' : 'light');
+            document.getElementById('themeIcon').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+        }
+
+        /* =========================================
+           BACKEND CONNECTION (REVIEWS)
+           ========================================= */
+        let allReviewsGlobal = []; 
+
+        async function loadAllReviews() {
+            console.log("Fetching reviews...");
+            try {
+                const response = await fetch(REVIEW_API_URL);
+                const data = await response.json();
+                
+                const uniqueReviews = new Map();
+                data.forEach(review => {
+                    const key = `${review.teacherId}_${review.user}`;
+                    uniqueReviews.set(key, review);
+                });
+                
+                allReviewsGlobal = Array.from(uniqueReviews.values());
+                console.log(`Loaded ${allReviewsGlobal.length} reviews.`);
+            } catch (error) {
+                console.error("Failed to load reviews:", error);
+            }
+        }
+
+        function getTeacherStats(teacherId) {
+            const reviews = allReviewsGlobal.filter(r => r.teacherId == teacherId);
+            if (reviews.length === 0) return { totalSum: 0, count: 0 };
+            let sum = 0;
+            reviews.forEach(r => sum += parseFloat(r.avgScore));
+            return { totalSum: sum, count: reviews.length };
+        }
+
+        /* =========================================
+           SEARCH
+           ========================================= */
+        function searchTeacher() {
+            const query = document.getElementById('teacherSearchInput').value.toLowerCase().trim();
+            const container = document.getElementById('searchResults');
+            
+            if (query.length === 0) { 
+                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">🎓</div><p>Start typing a Name to find faculty members.</p></div>`; return; 
+            }
+            if (query.length < 3) { 
+                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--warning-color); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">⌨️</div><p>Please enter at least 3 characters...</p></div>`; return; 
+            }
+            
+            const results = teacherDatabase.filter(t => t.name.toLowerCase().includes(query));
+            
+            if (results.length === 0) { 
+                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--error-color); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">🤷‍♂️</div><p>No faculty found matching "${query}"</p></div>`; return; 
+            }
+            
+            container.innerHTML = results.map(t => {
+                const stats = getTeacherStats(t.id);
+                const rawAvg = stats.count > 0 ? (stats.totalSum / stats.count) : 0;
+                const displayAvg = stats.count > 0 ? rawAvg.toFixed(1) : "N/A";
+                const starColor = rawAvg >= 4 ? '#4ade80' : (rawAvg >= 2.5 ? '#fbbf24' : '#f87171');
+                const starDisplay = stats.count > 0 ? `<span style="color:${starColor}">★</span>` : "☆";
+                const imageSrc = t.image ? t.image : `https://api.dicebear.com/9.x/avataaars/svg?seed=${t.seed || t.id}`;
+                
+                return `
+                <div class="teacher-card glass fade-in">
+                    <div class="card-banner"></div>
+                    <div class="t-avatar-wrapper"><div class="t-avatar"><img src="${imageSrc}" alt="${t.name}" loading="lazy"></div></div>
+                    <div class="t-content">
+                        <h3 class="t-name">${t.name}</h3><div class="t-badge"><span>📚</span> ${t.subject}</div>
+                        <div class="card-rating-display">
+                            <span style="font-size: 1.2rem;">${starDisplay}</span>
+                            <span class="score">${displayAvg}</span>
+                            <span style="font-size: 0.8rem; font-weight: 600; margin-left:5px; color: var(--text-secondary);">(${stats.count} reviews)</span>
+                        </div>
+                        <div class="t-details-list">
+                            <div class="t-row"><span class="t-label">🏫 Dept</span><span class="t-val">${t.department}</span></div>
+                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val" style="font-size: 0.85rem;"><a href="mailto:${t.email}" class="email-link">${t.email}</a></span></div>
+                            <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">Connect</a></span></div>
+                            <button class="btn-rate" onclick="openReviewModal(${t.id}, '${t.name}')"><span>⭐</span> Rate Now</button>
+                        </div>
+                    </div>
+                </div>`}).join('');
+        }
+
+        /* --- RATING LOGIC --- */
+        let currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+        const criteriaNames = [
+            {id: 'c1', label: '1. Behaviour'},
+            {id: 'c2', label: '2. Teaching Style'},
+            {id: 'c3', label: '3. Marks in Exam'},
+            {id: 'c4', label: '4. Marks in Internal'},
+            {id: 'c5', label: '5. Attendance'},
+            {id: 'c6', label: '6. Notes + Assignment'}
+        ];
+
+        function openReviewModal(id, name) {
+            document.getElementById('modalTeacherName').innerText = name;
+            document.getElementById('currentTeacherId').value = id;
+            
+            const existingReview = allReviewsGlobal.find(r => r.teacherId == id && r.user == loggedInUser);
+            const submitBtn = document.getElementById('modalSubmitBtn');
+            const editIndicator = document.getElementById('editModeIndicator');
+            
+            // Variable to hold existing comment
+            let existingComment = "";
+
+            if (existingReview) {
+                currentRatings = { ...existingReview.ratings };
+                existingComment = existingReview.comment || ""; // Load existing comment
+                submitBtn.innerText = "Update Review"; 
+                submitBtn.style.background = "var(--bg-gradient-2)";
+                editIndicator.style.display = "block";
+            } else {
+                currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+                submitBtn.innerText = "Submit Review";
+                submitBtn.style.background = "var(--success-color)";
+                editIndicator.style.display = "none";
+            }
+            
+            const formContainer = document.getElementById('ratingForm');
+            formContainer.innerHTML = '';
+
+            // 1. Generate Stars
+            criteriaNames.forEach(c => {
+                let starsHtml = '';
+                for(let i=1; i<=5; i++) { 
+                    const activeClass = i <= currentRatings[c.id] ? 'active' : '';
+                    starsHtml += `<button class="star-btn ${activeClass}" onclick="setStar('${c.id}', ${i}, this)">★</button>`; 
+                }
+                const group = document.createElement('div');
+                group.className = 'rating-group';
+                group.innerHTML = `<label class="rating-label">${c.label}</label><div class="stars-container" id="stars-${c.id}">${starsHtml}</div>`;
+                formContainer.appendChild(group);
+            });
+
+            // 2. Generate Text Area (NEW)
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'comment-section';
+            commentDiv.innerHTML = `
+                <label class="rating-label">Write a Review (Optional)</label>
+                <textarea id="reviewComment" class="comment-input" placeholder="Share your experience with this faculty...">${existingComment}</textarea>
+            `;
+            formContainer.appendChild(commentDiv);
+
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function closeModal() { document.getElementById('reviewModal').classList.remove('active'); }
+        function setStar(criteriaId, value, btnElement) {
+            currentRatings[criteriaId] = value;
+            const container = document.getElementById(`stars-${criteriaId}`);
+            const buttons = container.getElementsByTagName('button');
+            for(let i=0; i<buttons.length; i++) { 
+                if(i < value) buttons[i].classList.add('active'); 
+                else buttons[i].classList.remove('active'); 
+            }
+        }
+
+        function submitUserReview() {
+            if(Object.values(currentRatings).includes(0)) { alert("Please rate all 6 criteria!"); return; }
+            
+            const teacherId = document.getElementById('currentTeacherId').value;
+            // Get the comment
+            const commentText = document.getElementById('reviewComment').value.trim();
+
+            let sum = 0; Object.values(currentRatings).forEach(v => sum += v);
+            const avgScore = (sum / 6).toFixed(1);
+            
+            const btn = document.querySelector('#reviewModal .submit-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "Saving... ☁️";
+            btn.disabled = true;
+            btn.style.background = "#666";
+
+            const payload = { 
+                action: 'submit_review', 
+                teacherId: teacherId, 
+                user: loggedInUser, 
+                ratings: currentRatings, 
+                comment: commentText, // Send comment to backend
+                avgScore: avgScore 
+            };
+
+            fetch(REVIEW_API_URL, { method: "POST", body: JSON.stringify(payload) })
+            .then(res => res.json())
+            .then(data => {
+                if(data.result === "success") {
+                    alert("Review Saved!");
+                    allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
+                    allReviewsGlobal.push(payload);
+                    closeModal();
+                    searchTeacher(); 
+                } else { alert("Error saving review."); }
+            })
+            .catch(err => { console.error(err); alert("Connection Failed!"); })
+            .finally(() => { btn.innerText = originalText; btn.disabled = false; btn.style.background = "var(--success-color)"; });
+        }
+
+        /* =========================================
+           4. DATABASE
+           ========================================= */
+        const teacherDatabase = [
+   // --- NEW ADDITIONS (PS - MATHS) ---
+ { id: 1, name: "Dr. Anita Nayak", image: "https://i.ibb.co/vWL4Rnh/anitanayak.jpg", subject: "Maths", email: "anita.nayakfma@kiit.ac.in", phone: "9861402163", department: "MATHEMATICS", social: "https://www.facebook.com/profile.php?id=100031911081563" },
+  { id: 2, name: "Dr. Arun Kumar Gupta", image: "https://i.ibb.co/bMh19H7c/arungupta.jpg", subject: "Maths", email: "arun.guptafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/arunkumar.gupta.35325074" },
+  { id: 3, name: "Dr. Bapuji Sahoo", image: "https://i.ibb.co/zVVktZkJ/bapujii.jpg", subject: "Maths", email: "bapuji.sahoofma@kiit.ac.in", phone: "9778599785", department: "MATHEMATICS", social: "https://www.facebook.com/bapuji.sahoo.3" },
+  { id: 4, name: "Dr. Debdulal Ghosh", image: "https://i.ibb.co/LDQHv2BK/Debdulal.jpg", subject: "Maths", email: "debdulal.ghoshfma@kiit.ac.in", phone: "9735524757", department: "MATHEMATICS", social: "https://www.facebook.com/drdebdulal.ghosh" },
+  { id: 5, name: "Dr. Debdulal Panda", image: "https://i.ibb.co/0yq6qKS3/dp.jpg", subject: "Maths", email: "dpandafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/debdulal.panda" },
+  { id: 6, name: "Dr. Joydeb Pal", image: "https://i.ibb.co/FLvkTdJb/jp.jpg", subject: "Maths", email: "joydeb.palfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/joydeb.pal.338" },
+  { id: 7, name: "Dr. Kartikeswar Mahalik", image: "https://i.ibb.co/qFR32vrf/Kartikeswar.jpg", subject: "Maths", email: "kartikeswar.mahalikfma@kiit.ac.in", phone: "9583981132", department: "MATHEMATICS", social: "https://www.facebook.com/KARTIK9583" },
+  { id: 8, name: "Dr. Manas Ranjan Mohapatra", image: "https://i.ibb.co/7xQ0Vn6m/manas.jpg", subject: "Maths", email: "manas.mohapatrafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/manasnmath" },
+  { id: 9, name: "Dr. Mitali Routaray", image: "https://i.ibb.co/jP5f55pm/mitali.jpg", subject: "Maths", email: "mitali.routarayfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/mitali.routaray" },
+  { id: 10, name: "Dr. Mrutyunjay Das", image: "https://i.ibb.co/VcWRsVZh/md.jpg", subject: "Maths", email: "mdasfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/mrutyunjay.das.1238" },
+  { id: 11, name: "Dr. Prasanta Ku. Das", image: "https://i.ibb.co/pv31S6xv/pkdas.jpg", subject: "Maths", email: "pkdasfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/dr.pkdasfma1974" },
+  { id: 12, name: "Dr. Prasanta Ku. Mohanty", image: "https://i.ibb.co/svxqKyc9/pm.jpg", subject: "Maths", email: "pkmohantyfma@kiit.ac.in", phone: "9437227296", department: "MATHEMATICS", social: "https://www.facebook.com/prasanta.mohanty.10004" },
+  { id: 13, name: "Dr. Rajib Mia", image: "https://i.ibb.co/Q3Q7kkz6/Rajib-Mia.jpg", subject: "Maths", email: "rajib.miafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/rajib.mia.5" },
+  { id: 14, name: "Dr. Srikanta Behera", image: "https://i.ibb.co/zW1WNLz1/sb.jpg", subject: "Maths", email: "srikanta.beherafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/srikanta.behera.735" },
+  { id: 15, name: "Dr. Subhadarshan Sahoo", image: "https://i.ibb.co/VW6qVRMB/ss.jpg", subject: "Maths", email: "subhadarshan.sahoofma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/subhadarshan.sahoo.1" },
+  { id: 16, name: "Dr. Suman Sarkar", image: "https://i.ibb.co/JwQrfJ2j/sum.jpg", subject: "Maths", email: "suman.sarkarfma@kiit.ac.in", phone: "9593056231", department: "MATHEMATICS", social: "https://www.facebook.com/profile.php?id=100085001834609" },
+  { id: 17, name: "Dr. Utkal Keshari Dutta", image: "https://i.ibb.co/LDkrbxyW/ukd.jpg", subject: "Maths", email: "utkal.duttafma@kiit.ac.in", phone: "7008199641", department: "MATHEMATICS", social: "https://www.facebook.com/utkal.dutta01" },
+  { id: 18, name: "Dr. Vijil Kumar", image: "https://i.ibb.co/TDPntd2N/vk.jpg", subject: "Maths", email: "vijil.kumarfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/DrVijilKumar" },
+  { id: 19, name: "Dr. Vishal Pradhan", image: "https://i.ibb.co/5XwhT4Q3/vp.jpg", subject: "Maths", email: "vishal.pradhanfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/kiit.pradhan" },
+  // --- NEW ADDITIONS (IND4.O - CSE) ---
+  { id: 20, name: "Dr. Abhilas Swain", image: "", subject: "Industry 4.0", email: "abhilas.swainfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/abhilas.swain.7" },
+  { id: 21, name: "Dr. Anish Pandey", image: "", subject: "Industry 4.0", email: "anish.pandeyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/anish.pandey.961" },
+  { id: 22, name: "Dr. Ashwini Kumar", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
+  { id: 23, name: "Dr. Manoj Kumar Moharana", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
+  { id: 24, name: "Dr. Manoj Ukamanal", image: "", subject: "Industry 4.0", email: "manoj.ukamanalfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/manoj.uk/" },
+  { id: 25, name: "Dr. Md. Ehtesham Hasan", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
+  { id: 26, name: "Dr. Pampa Sinha", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/pampa.sinha.16" },
+  { id: 27, name: "Dr. Rahul", image: "", subject: "Industry 4.0", email: "rahul.choudharyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/profile.php?id=61567229407226" },
+  { id: 28, name: "Dr. Sanhita Mishra", image: "", subject: "Industry 4.0", email: "", phone: "9438268654", department: "ELECTRICAL", social: "https://www.facebook.com/sanhita.mishra.35" },
+  { id: 29, name: "Dr. Shanta Chakrabarty", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/profile.php?id=100083625348451" },
+  { id: 30, name: "Dr. Shubhasri Kundu", image: "", subject: "Industry 4.0", email: "", phone: "8280311924", department: "ELECTRICAL", social: "https://www.facebook.com/angel.su.10048" },
+  { id: 31, name: "Dr. Smitirupa Pradhan", image: "", subject: "Industry 4.0", email: "smitirupa.pradhanfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/smitirupa.pradhan" },
+  { id: 32, name: "Dr. Spandan Guha", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/spandan.guha.5" },
+  { id: 33, name: "Dr. Subhra Debdas", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/creatorsubhra" },
+  { id: 34, name: "Prof. A. K. Behera", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
+  { id: 35, name: "Prof. D. Mukherjee", image: "", subject: "Industry 4.0", email: "deepmukherjeefet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/t.d.m.m.a.45" },
+  { id: 36, name: "Prof. Deepak Kumar Rout", image: "", subject: "Industry 4.0", email: "deepak.routfet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/deepak.kumar.rout.99" },
+  { id: 37, name: "Prof. Kamal K Joshi", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
+  { id: 38, name: "Prof. Madhumita Mohanty", image: "", subject: "Industry 4.0", email: "madhumita.mohanty@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/profile.php?id=61557402673033" },
+  { id: 39, name: "Prof. Makireddi Ramana", image: "", subject: "Industry 4.0", email: "ramanafet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/ramana.makireddi" },
+  { id: 40, name: "Prof. P. Sunil", image: "", subject: "Industry 4.0", email: "pattepu.sunilfet@kiit.ac.in", phone: "9337901803", department: "ELECTRICAL", social: "https://www.facebook.com/sunil.raj.71" },
+  { id: 41, name: "Prof. R. Lenka", image: "", subject: "Industry 4.0", email: "rasmitafet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/rasmita.lenka.522" },
+  { id: 42, name: "Prof. Snehalika", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/snehalika.gupta.5" },
+  { id: 43, name: "Prof. Soubhagya Ranjan Prusty", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/soubhagyaranjan.prusty" },
+  { id: 44, name: "Prof. Subodh Kumar Mohanty", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/subodh.mohanty.476421/" },
+  { id: 45, name: "Prof. Subrat Behera", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/subrat.behera.790/" },
+  { id: 46, name: "Prof. Sudhanshu Dubey", image: "", subject: "Industry 4.0", email: "sudhanshu.dubeyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/sudhanshu.dubey.849210" },
+  { id: 47, name: "Prof. Sumit Dass", image: "", subject: "Industry 4.0", email: "sumit.dassfet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/sumit.dass" },
+  { id: 48, name: "Prof. Tapaswini Biswal", image: "", subject: "Industry 4.0", email: "", phone: "8598089097", department: "ELECTRICAL", social: "https://www.facebook.com/tapaswini.biswal.90" },
+  // --- NEW ADDITIONS (DS - CSE) ---
+  { id: 49, name: "Dr. Abhaya Kumar Sahoo", image: "", subject: "DS", email: "abhaya.sahoofcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 50, name: "Dr. Ajaya Kumar Parida", image: "", subject: "DS", email: "ajaya.paridafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 51, name: "Dr. Arup Abhinna Acharya", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 52, name: "Dr. Biswajeet Sethi", image: "", subject: "DS", email: "biswajeet.sethifcs@kiit.ac.in", phone: "9337466450", department: "CSE", social: "" },
+  { id: 53, name: "Dr. Chittaranjan Pradhan", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 54, name: "Dr. Jagannath Singh", image: "", subject: "DS", email: "jagannath.singhfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 55, name: "Dr. Mainak Bandyopadhyay", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 56, name: "Dr. Mainak Biswas", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 57, name: "Dr. Manas Ranjan Nayak", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 58, name: "Dr. Minakhi Rout", image: "", subject: "DS", email: "minakhi.routfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 59, name: "Dr. Mohit Ranjan Panda", image: "", subject: "DS", email: "mohit.pandafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 60, name: "Dr. Monideepa Roy", image: "", subject: "DS", email: "monideepafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 61, name: "Dr. Nachiketa Tarasia", image: "", subject: "DS", email: "ntarasiafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 62, name: "Dr. NIkhilanand Arya", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 63, name: "Dr. Partha Pratim Sarangi", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 64, name: "Dr. Rajat Kumar Behera", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 65, name: "Dr. Rajdeep Chatterjee", image: "", subject: "DS", email: "rajdeepfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 66, name: "Dr. Ranjita Kumari Dash", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 67, name: "Dr. Sambit Praharaj", image: "", subject: "DS", email: "", phone: "8763322883", department: "CSE", social: "" },
+  { id: 68, name: "Dr. Santosh Kumar Pani", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 69, name: "Dr. Sarita Tripathy", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 70, name: "Dr. Satarupa Mohanty", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 71, name: "Dr. Satyananda Champati Rai", image: "", subject: "DS", email: "satya.raifcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 72, name: "Dr. Suchismita Das", image: "", subject: "DS", email: "suchismita.dasfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 73, name: "Dr. Sujit Sangram Sahoo", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 74, name: "Dr. Sujoy Datta", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 75, name: "Dr. Sunil Kumar Gouda", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 76, name: "Mr. A Ranjith", image: "", subject: "DS", email: "a.ranjithfcs@kiit.ac.in", phone: "7981195876", department: "CSE", social: "" },
+  { id: 77, name: "Mr. Abhishek Raj", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 78, name: "Mr. Ankit Raj", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 79, name: "Mr. Debashis Hati", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 80, name: "Mr. Deependra Singh", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 81, name: "Mr. Gananath Bhuyan", image: "", subject: "DS", email: "gananatha.bhuyanfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 82, name: "Mr. Himanshu Ranjan", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 83, name: "Mr. Jyotiprakash Mishra", image: "", subject: "DS", email: "jyotiprakash.mishrafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 84, name: "Mr. Pushkar Kishore", image: "", subject: "DS", email: "pushkar.kishorefcs@kiit.ac.in", phone: "9430499577", department: "CSE", social: "" },
+  { id: 85, name: "Mr. Sourav Kumar Giri", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 86, name: "Mr. Sorabh Debnath", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 87, name: "Mr. Sunil Kumar Sawant", image: "", subject: "DS", email: "", phone: "7903130954", department: "CSE", social: "" },
+  { id: 88, name: "Mr. Vijay Kumar Meena", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 89, name: "Ms. Benazir Neha", image: "", subject: "DS", email: "benazir.nehafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+  { id: 90, name: "Ms. N. Sangita Achary", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 91, name: "Ms. Shubhangi Shreya", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 92, name: "Prof. (Dr.) Alok Kumar Jagadev", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
+  { id: 93, name: "Prof. (Dr.) Amulya Ratna Swain", image: "", subject: "DS", email: "amulyafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
+
+  // --- NEW ADDITIONS (DSD - ELECTRONICS) ---
+  { id: 94, name: "Dr. Harish Kumar Patnaik", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 95, name: "Dr. Mahendra Kumar Gourisaria", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 96, name: "Prof. A. Bakshi", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 97, name: "Prof. A. Basak", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 98, name: "Prof. A. Gorai", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 99, name: "Prof. Ayaskanta Mishra", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 100, name: "Prof. B Shivlal Patro", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 101, name: "Prof. Bikash Kumar Behera", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 102, name: "Prof. D. Mukherjee", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 103, name: "Prof. K. B. Ray", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 104, name: "Prof. M. K. Beuria", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 105, name: "Prof. Mamata Panigrahy", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 106, name: "Prof. Manoj Kumar Parida", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 107, name: "Prof. Mayank Mishra", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 108, name: "Prof. Niten Kumar Panda", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 109, name: "Prof. P. Biswal", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 110, name: "Prof. P. K. Samanta", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 111, name: "Prof. R. K. Khanna", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 112, name: "Prof. Ruby Mishra", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 113, name: "Prof. S. K. Badi", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 114, name: "Prof. S. K. Behera", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 115, name: "Prof. S. K. Maity", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 116, name: "Prof. Shruti", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 117, name: "Prof. Sruti S. Singh", subject: "DSD", department: "ELECTRONICS", email: "", phone: "9861342599", image: "", social: "" },
+  { id: 118, name: "Prof. Sukanta Sabut", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 119, name: "Prof. Sunil Kr. Mishra", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 120, name: "Prof. Swati Swayamsiddha", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 121, name: "Prof. T. M. Behera", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+  { id: 122, name: "Prof. Wriddhi Bhowmick", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
+
+  // --- NEW ADDITIONS (AFL - CSE) ---
+  { id: 123, name: "Dr. Ajaya Kumar Parida", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 124, name: "Dr. Anil Kumar Swain", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 125, name: "Dr. Debadatta Naik", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 126, name: "Dr. Jasaswi Prasad Mohanty", subject: "AFL", department: "CSE", email: "", phone: "9437564198", image: "", social: "" },
+  { id: 127, name: "Dr. Jayeeta Chakraborty", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 128, name: "Dr. Jyoti Prakash Meher", subject: "AFL", department: "CSE", email: "", phone: "9040137719", image: "", social: "" },
+  { id: 129, name: "Dr. Mainak Biswas", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 130, name: "Dr. Nayan Kumar Subhashis Behera", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 131, name: "Dr. Priyanka Panigrahi", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 132, name: "Dr. Priyanka Roy", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 133, name: "Dr. Santosh Kumar Baliarsingh", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 134, name: "Dr. Soumya Ranjan Nayak", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 135, name: "Dr. Suman Majumder", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 136, name: "Dr. Supriyo Mandal", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 137, name: "Dr. Tanik Saikh", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 138, name: "Mr. Abinas Panda", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 139, name: "Mr. Amiya Kumar Dash", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 140, name: "Mr. Jhalak Hota", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 141, name: "Mr. Lalit Kumar Vashishtha", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 142, name: "Mr. Prabhu Prasad Dev", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 143, name: "Mr. R. N. Ramakant Parida", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 144, name: "Mr. Soumya Sanket Patra", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 145, name: "Mrs. Lipika Dewangan", subject: "AFL", department: "CSE", email: "", phone: "8328813061", image: "", social: "" },
+  { id: 146, name: "Mrs. Naliniprava Behera", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 147, name: "Ms. Benazir Neha", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 148, name: "New Faculty 2", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 149, name: "Prof. (Dr.) Abhishek Ray", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 150, name: "Prof. (Dr.) Bhabani Shankar Prasad Mishra", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 151, name: "Prof. (Dr.) Suresh Chandra Satapathy", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 152, name: "Prof. Satish Kumar Gannamaneni", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
+
+  // --- NEW ADDITIONS (STW - CIVIL) ---
+  { id: 153, name: "Dr. Amlana Panda", subject: "STW", department: "CIVIL", email: "amlana.pandafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/RTdzc4vx/amlana.jpg", social: "https://www.facebook.com/dr.amlanpanda" },
+  { id: 154, name: "Dr. Arpita Goswami", subject: "STW", department: "CIVIL", email: "arpita.goswamifhu@kiit.ac.in", phone: "8131814844", image: "https://i.ibb.co/RTdzc4vx/amlana.jpg", social: "https://www.facebook.com/ARPITA.GOSWAMI.161" },
+  { id: 155, name: "Dr. Avinash Chaudhary", subject: "STW", department: "CIVIL", email: "avinash.chaudharyfme@kiit.ac.in", phone: "", image: "https://i.ibb.co/KpnwrKDf/arbind.webp", social: "https://www.facebook.com/share/18NQYNJbZm/?mibextid=LQQJ4d" },
+  { id: 156, name: "Dr. Basanta Kumar Rana", subject: "STW", department: "CIVIL", email: "", phone: "", image: "https://i.ibb.co/ksKNvP5R/bkr.jpg", social: "https://www.facebook.com/basantakumar.rana" },
+  { id: 157, name: "Dr. Bharat Chandra Routara", subject: "STW", department: "CIVIL", email: "broutrafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/dJKyHrB6/bcr.webp", social: "https://www.facebook.com/bharat.routaray" },
+  { id: 158, name: "Dr. Chetna Sinha", subject: "STW", department: "CIVIL", email: "chetna.sinhafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/bg55mFWt/Chetna-Sinha-1.jpg", social: "" },
+  { id: 159, name: "Dr. Deepanjali Mishra", subject: "STW", department: "CIVIL", email: "deepanjali.mishrafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/9HypdPVr/Screenshot-2025-12-16-151223.png", social: "https://www.facebook.com/profile.php?id=100002844163015" },
+  { id: 160, name: "Dr. K. B.Sahu", subject: "STW", department: "CIVIL", email: "kbsahufme@kiit.ac.in", phone: "", image: "https://i.ibb.co/ynf07c7M/MECH-Dr-Kunja-Bihari-Sahu-1.webp", social: "https://www.facebook.com/kunjabihari.sahu.56" },
+  { id: 161, name: "Dr. Khushboo Kuddus", subject: "STW", department: "CIVIL", email: "khushboo.kuddusfhu@kiit.ac.in", phone: "9955303606", image: "https://i.ibb.co/bMwyBN1Z/Khushboo-Kuddus-1.jpg", social: "https://www.facebook.com/khushboo.kuddus.5" },
+  { id: 162, name: "Dr. Ramanuj Kumar", subject: "STW", department: "CIVIL", email: "ramanujfme@kiit.ac.in", phone: "", image: "https://i.ibb.co/S4hBfxFY/Mech-Ramanuj-Kumar.jpg", social: "https://www.facebook.com/ramanuj.pandey.31" },
+  { id: 163, name: "Dr. Rasmi R. Behera", subject: "STW", department: "CIVIL", email: "rasmi.beherafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/JgFzP3n/MECH-Dr-Rasmi-Ranjan-behera.webp", social: "https://www.facebook.com/rasmiranjan.behera.35" },
+  { id: 164, name: "Dr. Sambit K. Mohapatra", subject: "STW", department: "CIVIL", email: "sambit.mohapatrafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/vvz1nXH2/Mech-Dr-Sambit-Mohapatra.jpg", social: "https://www.facebook.com/sambit.mohapatra.330467" },
+  { id: 165, name: "Dr. Santosh Kumar Hotta", subject: "STW", department: "CIVIL", email: "santoshk.hottafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/Y7gL0PJn/MECH-Dr-Santosh-Kumar-Hotta.webp", social: "https://www.facebook.com/santoshkumar.hotta.14/" },
+  { id: 166, name: "Dr. Seema K. Ladsaria", subject: "STW", department: "CIVIL", email: "seema.ladsariafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/dsG7qdXx/seema.jpg", social: "https://www.facebook.com/seema.ladsaria" },
+  { id: 167, name: "Dr. Sharda Acharya", subject: "STW", department: "CIVIL", email: "", phone: "", image: "https://i.ibb.co/hJnZWsRw/Sharda-Acharya-1.jpg", social: "https://www.facebook.com/shardacharya?mibextid=JRoKGi" },
+  { id: 168, name: "Dr. Shradha Dhal", subject: "STW", department: "CIVIL", email: "shraddha.dhal@kiitbiotech.ac.in", phone: "", image: "https://i.ibb.co/bgZL46ZD/Shraddha-Dhal.jpg", social: "https://x.com/Shraddh54873142" },
+  { id: 169, name: "Dr. Spandan Guha", subject: "STW", department: "CIVIL", email: "spandan.guhafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/MyN1Fmqb/MECH-Dr-Spandan-Guha.webp", social: "https://www.facebook.com/spandan.guha.5?mibextid=LQQJ4d" },
+  { id: 170, name: "Dr. Subarna Bhattacharya", subject: "STW", department: "CIVIL", email: "subarna.bhattacharyafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/bjN0WdHk/Subarna-Bhattacharya-1.jpg", social: "https://www.facebook.com/drsubarnabhattacharya?mibextid=9R9pXO" },
+  { id: 171, name: "Dr. Suchismita Satapathy", subject: "STW", department: "CIVIL", email: "ssatapathyfme@kiit.ac.in", phone: "", image: "https://i.ibb.co/Qj7C6G3C/MECH-Dr-S-Satapathy.webp", social: "https://www.facebook.com/suchismita.satapathy.50/" },
+  { id: 172, name: "Dr. Sudeshna Datta Chaudhuri", subject: "STW", department: "CIVIL", email: "sudeshna.chaudhurifhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/5WJ1M6Hw/Sudeshna-Datta-Chaudhuri-1.jpg", social: "https://www.facebook.com/sd.chaudhuri.73" },
+  { id: 173, name: "Dr. Swayam B Mishra", subject: "STW", department: "CIVIL", email: "swayambikash.mishrafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/5xkkfx5F/MECH-Dr-Swayam-Bikash-Mishra.webp", social: "https://www.facebook.com/swayambikash.mishra.5" },
+  { id: 174, name: "Dr. Tanmoy Putatunda", subject: "STW", department: "CIVIL", email: "tanmoy.putatundaksol@kiit.ac.in", phone: "", image: "https://i.ibb.co/9k5q8K73/Tanmoy-Putatunda-1.jpg", social: "https://www.facebook.com/tanmoy.putatunda" },
+  { id: 175, name: "Ms. Rishikka Patnaik", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 176, name: "Ms. Rupali Das", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 177, name: "Prof. A. K. Behera", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 178, name: "Prof. Amit Kumar Das", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 179, name: "Prof. Aparupa Pani", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 180, name: "Prof. Asit Behera", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 181, name: "Prof. Gaurav Udgata", subject: "STW", department: "CIVIL", email: "", phone: "9438280569", image: "", social: "" },
+  { id: 182, name: "Prof. Kalpana Sahoo", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 183, name: "Prof. M I Nayyer", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 184, name: "Prof. Madhumita Mohanty", subject: "STW", department: "CIVIL", email: "", phone: "8763191822", image: "", social: "" },
+  { id: 185, name: "Prof. Malaya Mohanty", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 186, name: "Prof. Manas Chandan Mishra", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 187, name: "Prof. N.C.Moharana", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 188, name: "Prof. Nazia T. Imran", subject: "STW", department: "CIVIL", email: "", phone: "9776807787", image: "", social: "" },
+  { id: 189, name: "Prof. P. Nanda", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 190, name: "Prof. Rachita Panda", subject: "STW", department: "CIVIL", email: "", phone: "9658978785", image: "", social: "" },
+  { id: 191, name: "Prof. S. R. Samal", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 192, name: "Prof. S.Nanda", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+  { id: 193, name: "Prof. Smita Rani Panda", subject: "STW", department: "CIVIL", email: "", phone: "8895266795", image: "", social: "" },
+  { id: 194, name: "Prof. Sunny Jaiswal", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
+
+  // --- NEW ADDITIONS (ELECTIVE - HUMANITIES) ---
+  { id: 195, name: "Dr. Arvind Kumar Yadav", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 196, name: "Dr. Bignya Patnaik", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 197, name: "Dr. Dhyanadipta Panda", subject: "ELECTIVE", department: "HUMANITIES", email: "dpandafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/2YYp991c/cse40ele.jpg", social: "https://www.facebook.com/dhyanadipta.panda" },
+  { id: 198, name: "Dr. Jayalaxmi Samal", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 199, name: "Dr. Lopamudra Lenka", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 200, name: "Dr. Motiniva Nayak", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 201, name: "Dr. Sarbeswar Mohanty", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 202, name: "Dr. Smrutirekha Mohanty", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 203, name: "Dr. Suvendu Barik", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 204, name: "Dr. Tulasi Malini Maharatha", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 205, name: "Krishna Prasad Ram", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 206, name: "Ms. Ipsita Mohapatra", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 207, name: "Ms. Mamita Dash", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+  { id: 208, name: "Rajalaxmi Mohanty", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
+
+  // --- NEW ADDITIONS (MATHS - MATHEMATICS) ---
+  // (Adding only those not present in IDs 1-19, skipping exact name duplicates)
+  { id: 209, name: "Dr. Laxmipriya Nayak", subject: "Maths", department: "MATHEMATICS", email: "lnayakfma@kiit.ac.in", phone: "", image: "https://i.ibb.co/G4svZtzK/ln.jpg", social: "https://www.facebook.com/profile.php?id=100003703050322" },
+  { id: 210, name: "Dr. Mitali Madhumita Acharya", subject: "Maths", department: "MATHEMATICS", email: "mitali.acharyafpy@kiit.ac.in", phone: "9438849392", image: "https://i.ibb.co/szT6k2J/mmm.jpg", social: "https://www.facebook.com/profile.php?id=100011728752772" },
+  { id: 211, name: "Dr. Manoranjan Sahoo", subject: "Maths", department: "MATHEMATICS", email: "mrsahoofma@kiit.ac.in", phone: "", image: "https://i.ibb.co/7xhfpCH6/ms.jpg", social: "https://www.facebook.com/msahoo.KIITuniversity" },
+  { id: 212, name: "Dr. Rajashree Mishra", subject: "Maths", department: "MATHEMATICS", email: "rmishrafma@kiit.ac.in", phone: "", image: "https://i.ibb.co/w8G0PmG/rm.jpg", social: "https://www.facebook.com/rajashree.mishra.351" },
+  { id: 213, name: "Dr. Srikumar Acharya", subject: "Maths", department: "MATHEMATICS", email: "sacharyafma@kiit.ac.in", phone: "", image: "https://i.ibb.co/LDS9Fzn5/sa.jpg", social: "https://www.facebook.com/srikumar.kgp" },
+  { id: 214, name: "Dr. Suvasis Nayak", subject: "Maths", department: "MATHEMATICS", email: "suvasis.nayakfma@kiit.ac.in", phone: "", image: "https://i.ibb.co/3y8NcKw5/sn.jpg", social: "https://www.facebook.com/profile.php?id=100035722623536" },
+
+  // --- NEW ADDITIONS (OS - CSE) ---
+  { id: 215, name: "Dr. Abir Sen", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 216, name: "Dr. Adyasha Dash", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 217, name: "Dr. Ajay Kumar Jena", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 218, name: "Dr. Biswajeet Sethi", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 219, name: "Dr. Debachudamani Prusti", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 220, name: "Dr. Jyotiranjan Swain", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 221, name: "Dr. Krishnendu Maity", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 222, name: "Dr. Kumar Surjeet Chaudhury", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 223, name: "Dr. Manas Ranjan Lenka", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 224, name: "Dr. Mukesh Kumar", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 225, name: "Dr. Santwana Sagnika", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 226, name: "Dr. Saurabh Bilgaiyan", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 227, name: "Dr. Saurabh Jha", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 228, name: "Dr. Subhra Priyadarshini Biswal", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 229, name: "Dr. Suchismita Das", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 230, name: "Dr. Sujoy Madhab Roy", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 231, name: "Dr. Suman Majumder", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 232, name: "Dr. Swagat Ranjan sahoo", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 233, name: "Dr. Tanmoy Maitra", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 234, name: "Mr. A Ranjith", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 235, name: "Mr. Amit Kumar", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 236, name: "Mr. Deependra Singh", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 237, name: "Mr. Prasenjit Maiti", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 238, name: "Mr. Rakesh Kumar Rai", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 239, name: "Mr. Soumya Sanket Patra", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 240, name: "Mr. Sunil Kumar Sawant", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 241, name: "Ms. Shilpa Das", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 242, name: "Ms. Swati Priyambada Satpathy", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 243, name: "Prof. (Dr.) Alok Kumar Jagadev", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 244, name: "Prof. (Dr.) Amulya Ratna Swain", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 245, name: "Prof. (Dr.) Santosh Kumar Pani", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 246, name: "Prof.(Dr.) Biswajit Sahoo", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
+
+  // --- NEW ADDITIONS (OOPS - CSE) ---
+  { id: 247, name: "Dr. Abhaya Kumar Sahoo", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 248, name: "Dr. Adyasha Dash", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 249, name: "Dr. Ajaya Kumar Parida", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 250, name: "Dr. Aleena Swetapadma", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 251, name: "Dr. Amiya Ranjan Panda", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 252, name: "Dr. Anil Kumar Swain", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 253, name: "Dr. Anjan Bandyopadhyay", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 254, name: "Dr. Arup Abhinna Acharya", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 255, name: "Dr. Asif Uddin Khan", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 256, name: "Dr. Banchhanidhi Dash", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 257, name: "Dr. Benazir Neha", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 258, name: "Dr. Bhaswati Sahoo", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 259, name: "Dr. Bindu Agarwalla", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 260, name: "Dr. Chittaranjan Pradhan", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 261, name: "Dr. Dayal Kumar Behera", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 262, name: "Dr. Debanjan Pathak", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 263, name: "Dr. Debashis Hati", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 264, name: "Dr. Dipti Dash", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 265, name: "Dr. Harish Kumar Patnaik", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 266, name: "Dr. Himadri Sekhar Roy", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 267, name: "Dr. Himansu Das", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 268, name: "Dr. Jagannath Singh", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 269, name: "Dr. Jayanta Mondal", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 270, name: "Dr. Junali Jasmine Jena", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 271, name: "Dr. Kumar Devadutta", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 272, name: "Dr. Kunal Anand", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 273, name: "Dr. Leena Das", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 274, name: "Dr. Mahendra Kumar Gourisaria", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 275, name: "Dr. Manoj Kumar Mishra", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 276, name: "Dr. Minakhi Rout", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
+
+  // --- NEW ADDITIONS (DBMS - CSE) ---
+  { id: 277, name: "Dr. Mohit Ranjan Panda", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 278, name: "Dr. Monideepa Roy", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 279, name: "Dr. Mukesh Kumar", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 280, name: "Dr. Namita Panda", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 281, name: "Dr. Nibedan Panda", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 282, name: "Dr. Niranjan Kumar Ray", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 283, name: "Dr. Nitin Varyani", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 284, name: "Dr. Partha Sarathi Paul", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 285, name: "Dr. Pinaki Sankar Chatterjee", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 286, name: "Dr. Pradeep Kumar Mallick", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 287, name: "Dr. Priyanka Panigrahi", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 288, name: "Dr. Priyanka Roy", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 289, name: "Dr. Raghunath Dey", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 290, name: "Dr. Rajat Kumar Behera", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 291, name: "Dr. Ranjita Kumari Dash", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 292, name: "Dr. Rinku Datta Rakshit", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 293, name: "Dr. Santwana Sagnika", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 294, name: "Dr. Saurabh Jha", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 295, name: "Dr. Shaswati Patra", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 296, name: "Dr. Soumya Ranjan Nayak", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 297, name: "Dr. Sourabh Debnath", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 298, name: "Dr. Subhasis Dash", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 299, name: "Dr. Subhranshu Sekhar Tripathy", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 300, name: "Dr. Suchismita Das", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 301, name: "Dr. Suchismita Rout", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 302, name: "Dr. Sujoy Datta", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 303, name: "Dr. Suneeta Mohanty", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 304, name: "Dr. Sunil Kumar Gouda", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 305, name: "Dr. Sushruta Mishra", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 306, name: "Dr. VIkas Hassija", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 307, name: "Mr. Abhijit Deuri", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
+
+  // --- NEW ADDITIONS (COA - CSE) ---
+  { id: 308, name: "Mr. Abhishek Raj", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 309, name: "Mr. Arup Sarkar", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 310, name: "Mr. Biraja Prasad Nayak", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 311, name: "Mr. Gananath Bhuyan", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 312, name: "Mr. Himanshu Ranjan", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 313, name: "Mr. Jyotiprakash Mishra", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 314, name: "Mr. N. Biraja Isac", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 315, name: "Mr. Pradeep Kandula", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 316, name: "Mr. Pushkar Kishore", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 317, name: "Mr. Sankalp Nayak", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 318, name: "Mr. Sourav Kumar Giri", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 319, name: "Mr. Vijay Kumar Meena", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 320, name: "Mr. Vishal Meena", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 321, name: "Mrs. Chandani Kumari", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 322, name: "Mrs. Naliniprava Behera", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 323, name: "Ms. Indu", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 324, name: "Ms. Ipsita Paul", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 325, name: "Ms. Krutika Verma", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 326, name: "Ms. N. Sangita Achary", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 327, name: "Ms. Sarita Mishra", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 328, name: "Ms. Shubhangi Shreya", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 329, name: "Ms. Uppada Gautami", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 330, name: "Prof. (Dr.) Arghya Kundu", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 331, name: "Prof. (Dr.) Bhabani Shankar Prasad Mishra", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 332, name: "Prof. (Dr.) Hrudaya Kumar Tripathy", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 333, name: "Prof. (Dr.) Prasant Kumar Pattnaik", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 334, name: "Prof. (Dr.) Samaresh Mishra", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
+  { id: 335, name: "Prof. (Dr.) Suresh Chandra Satapathy", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" }
+        ];
+    </script>
+</body>
+</html>
